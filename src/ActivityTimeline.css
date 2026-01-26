@@ -1,0 +1,203 @@
+.activity-timeline {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.activity-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.activity-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.activity-filters button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.activity-filters button:hover {
+  background: #f8f9fa;
+}
+
+.activity-filters button.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.activity-loading,
+.activity-error,
+.activity-empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.activity-error {
+  color: #e74c3c;
+}
+
+.timeline-container {
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #667eea, #764ba2);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.timeline-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -32px;
+  top: 10px;
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: 3px solid #667eea;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.action-icon {
+  font-size: 14px;
+}
+
+.timeline-item.action-created .timeline-marker {
+  border-color: #27ae60;
+}
+
+.timeline-item.action-updated .timeline-marker {
+  border-color: #3498db;
+}
+
+.timeline-item.action-deleted .timeline-marker {
+  border-color: #e74c3c;
+}
+
+.timeline-item.action-commented .timeline-marker {
+  border-color: #f39c12;
+}
+
+.timeline-content {
+  padding: 16px 20px;
+}
+
+.timeline-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.timeline-user {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 15px;
+}
+
+.timeline-action {
+  padding: 2px 8px;
+  background: #ecf0f1;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+.timeline-item.action-created .timeline-action {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.timeline-item.action-updated .timeline-action {
+  background: #d6eaf8;
+  color: #3498db;
+}
+
+.timeline-item.action-deleted .timeline-action {
+  background: #fadbd8;
+  color: #e74c3c;
+}
+
+.timeline-item.action-commented .timeline-action {
+  background: #fef5e7;
+  color: #f39c12;
+}
+
+.timeline-resource {
+  padding: 2px 8px;
+  background: #667eea;
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.timeline-name {
+  font-size: 16px;
+  color: #2c3e50;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.timeline-details {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.detail-item {
+  color: #555;
+  margin: 4px 0;
+}
+
+.timeline-timestamp {
+  font-size: 12px;
+  color: #95a5a6;
+  margin-top: 8px;
+}

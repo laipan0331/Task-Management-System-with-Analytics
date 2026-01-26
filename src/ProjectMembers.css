@@ -1,0 +1,172 @@
+.project-members {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.members-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.btn-add-member {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-add-member:hover {
+  background: #2563eb;
+}
+
+.btn-add-member:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.members-error {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.add-member-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.add-member-form select {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+}
+
+.add-member-form select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.btn-confirm {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-confirm:hover {
+  background: #059669;
+}
+
+.btn-confirm:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.no-members {
+  text-align: center;
+  color: #6b7280;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  transition: background 0.2s;
+}
+
+.member-item:hover {
+  background: #f3f4f6;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.member-username {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.owner-badge {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.btn-remove {
+  background: #ef4444;
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  background: #dc2626;
+}
+
+.btn-remove:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
