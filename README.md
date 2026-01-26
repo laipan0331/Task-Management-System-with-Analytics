@@ -98,7 +98,7 @@ A full-featured full-stack web application for managing projects and tasks, incl
 ### Frontend
 - React 19.2.0
 - Vite 7.2.4
-- Modern ES6+ JavaScript (no async/await per course requirements)
+- Modern ES6+ JavaScript
 - CSS3 custom styling
 - Recursive components (subtasks, nested comments)
 
