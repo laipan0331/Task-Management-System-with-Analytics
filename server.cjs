@@ -576,6 +576,312 @@ app.get('/api/analytics/user', requireAuth, (req, res) => {
   res.json({ analytics });
 });
 
+// ===== KNOWLEDGE GRAPH & RAG ANALYTICS ROUTES =====
+app.get('/api/analytics/knowledge-graph', requireAuth, (req, res) => {
+  const username = req.username;
+  const userTasks = tasks.getTasksByUser(username);
+  const userProjects = projects.getProjectsByUser(username);
+  
+  // Build knowledge graph data
+  const nodes = [];
+  const edges = [];
+  const nodeMap = new Map();
+  
+  // Add project nodes
+  userProjects.forEach(project => {
+    if (!project.archived) {
+      const node = {
+        id: `project-${project.id}`,
+        type: 'project',
+        label: project.name,
+        data: project
+      };
+      nodes.push(node);
+      nodeMap.set(node.id, node);
+    }
+  });
+  
+  // Add task nodes and relationships
+  userTasks.forEach(task => {
+    const taskNode = {
+      id: `task-${task.id}`,
+      type: 'task',
+      label: task.title,
+      status: task.status,
+      priority: task.priority,
+      data: task
+    };
+    nodes.push(taskNode);
+    nodeMap.set(taskNode.id, taskNode);
+    
+    // Task-to-project edges
+    if (task.projectId) {
+      const projectNodeId = `project-${task.projectId}`;
+      if (nodeMap.has(projectNodeId)) {
+        edges.push({
+          from: taskNode.id,
+          to: projectNodeId,
+          type: 'belongs-to',
+          weight: 1.0
+        });
+      }
+    }
+    
+    // Parent-child task edges
+    if (task.parentTaskId) {
+      edges.push({
+        from: taskNode.id,
+        to: `task-${task.parentTaskId}`,
+        type: 'subtask-of',
+        weight: 0.8
+      });
+    }
+    
+    // Similar tasks based on tags
+    userTasks.forEach(otherTask => {
+      if (task.id !== otherTask.id && task.tags && otherTask.tags) {
+        const similarity = calculateTagSimilarity(task.tags, otherTask.tags);
+        if (similarity > 0.3) {
+          edges.push({
+            from: taskNode.id,
+            to: `task-${otherTask.id}`,
+            type: 'similar-to',
+            weight: similarity
+          });
+        }
+      }
+    });
+  });
+  
+  res.json({ nodes, edges });
+});
+
+// Multi-hop reasoning: Find related tasks through graph traversal
+app.get('/api/analytics/related-tasks/:taskId', requireAuth, (req, res) => {
+  const username = req.username;
+  const taskId = req.params.taskId;
+  const task = tasks.getTaskById(taskId);
+  
+  if (!task) {
+    res.status(404).json({ error: 'task-not-found' });
+    return;
+  }
+  
+  if (task.createdBy !== username) {
+    res.status(403).json({ error: 'forbidden' });
+    return;
+  }
+  
+  const allTasks = tasks.getTasksByUser(username);
+  const relatedTasks = findRelatedTasks(task, allTasks);
+  
+  res.json({ relatedTasks });
+});
+
+// Semantic search across tasks and projects
+app.post('/api/analytics/semantic-search', requireAuth, (req, res) => {
+  const username = req.username;
+  const { query, mode } = req.body;
+  
+  if (!query || !query.trim()) {
+    res.status(400).json({ error: 'query-required' });
+    return;
+  }
+  
+  const userTasks = tasks.getTasksByUser(username);
+  const userProjects = projects.getProjectsByUser(username);
+  
+  let results = [];
+  
+  if (mode === 'semantic') {
+    results = performSemanticSearch(query, userTasks, userProjects);
+  } else {
+    results = performExactSearch(query, userTasks, userProjects);
+  }
+  
+  res.json({ results });
+});
+
+// Task recommendations based on similarity
+app.get('/api/analytics/recommendations', requireAuth, (req, res) => {
+  const username = req.username;
+  const userTasks = tasks.getTasksByUser(username);
+  
+  const recommendations = generateRecommendations(userTasks);
+  
+  res.json({ recommendations });
+});
+
+// ===== HELPER FUNCTIONS FOR RAG & KNOWLEDGE GRAPH =====
+function calculateTagSimilarity(tags1, tags2) {
+  if (!tags1 || !tags2) return 0;
+  const set1 = new Set(tags1.toLowerCase().split(',').map(t => t.trim()));
+  const set2 = new Set(tags2.toLowerCase().split(',').map(t => t.trim()));
+  const intersection = [...set1].filter(x => set2.has(x)).length;
+  const union = new Set([...set1, ...set2]).size;
+  return union > 0 ? intersection / union : 0;
+}
+
+function findRelatedTasks(task, allTasks) {
+  const related = [];
+  
+  allTasks.forEach(otherTask => {
+    if (otherTask.id !== task.id) {
+      let relevance = 0;
+      
+      // Same project
+      if (otherTask.projectId === task.projectId) relevance += 0.3;
+      
+      // Same status
+      if (otherTask.status === task.status) relevance += 0.1;
+      
+      // Same priority
+      if (otherTask.priority === task.priority) relevance += 0.1;
+      
+      // Same assignee
+      if (otherTask.assignedTo === task.assignedTo) relevance += 0.2;
+      
+      // Similar tags
+      if (task.tags && otherTask.tags) {
+        const tagSimilarity = calculateTagSimilarity(task.tags, otherTask.tags);
+        relevance += tagSimilarity * 0.3;
+      }
+      
+      if (relevance > 0.3) {
+        related.push({
+          ...otherTask,
+          relevanceScore: relevance
+        });
+      }
+    }
+  });
+  
+  return related
+    .sort((a, b) => b.relevanceScore - a.relevanceScore)
+    .slice(0, 5);
+}
+
+function tokenize(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter(word => word.length > 2);
+}
+
+function calculateCosineSimilarity(tokens1, tokens2) {
+  const allTokens = [...new Set([...tokens1, ...tokens2])];
+  
+  const vector1 = allTokens.map(token => tokens1.filter(t => t === token).length);
+  const vector2 = allTokens.map(token => tokens2.filter(t => t === token).length);
+  
+  const dotProduct = vector1.reduce((sum, val, i) => sum + val * vector2[i], 0);
+  const magnitude1 = Math.sqrt(vector1.reduce((sum, val) => sum + val * val, 0));
+  const magnitude2 = Math.sqrt(vector2.reduce((sum, val) => sum + val * val, 0));
+  
+  if (magnitude1 === 0 || magnitude2 === 0) return 0;
+  
+  return dotProduct / (magnitude1 * magnitude2);
+}
+
+function performSemanticSearch(query, tasks, projects) {
+  const queryTokens = tokenize(query);
+  const results = [];
+  
+  // Search tasks
+  tasks.forEach(task => {
+    const taskText = `${task.title} ${task.description} ${task.tags || ''}`;
+    const taskTokens = tokenize(taskText);
+    const similarity = calculateCosineSimilarity(queryTokens, taskTokens);
+    
+    if (similarity > 0.2) {
+      results.push({
+        type: 'task',
+        data: task,
+        similarity: similarity,
+        relevanceScore: similarity * 100
+      });
+    }
+  });
+  
+  // Search projects
+  projects.forEach(project => {
+    if (!project.archived) {
+      const projectText = `${project.name} ${project.description || ''}`;
+      const projectTokens = tokenize(projectText);
+      const similarity = calculateCosineSimilarity(queryTokens, projectTokens);
+      
+      if (similarity > 0.2) {
+        results.push({
+          type: 'project',
+          data: project,
+          similarity: similarity,
+          relevanceScore: similarity * 100
+        });
+      }
+    }
+  });
+  
+  return results.sort((a, b) => b.similarity - a.similarity).slice(0, 10);
+}
+
+function performExactSearch(query, tasks, projects) {
+  const lowerQuery = query.toLowerCase();
+  const results = [];
+  
+  tasks.forEach(task => {
+    const taskText = `${task.title} ${task.description} ${task.tags || ''}`.toLowerCase();
+    if (taskText.includes(lowerQuery)) {
+      results.push({
+        type: 'task',
+        data: task,
+        similarity: 1.0,
+        relevanceScore: 100
+      });
+    }
+  });
+  
+  projects.forEach(project => {
+    if (!project.archived) {
+      const projectText = `${project.name} ${project.description || ''}`.toLowerCase();
+      if (projectText.includes(lowerQuery)) {
+        results.push({
+          type: 'project',
+          data: project,
+          similarity: 1.0,
+          relevanceScore: 100
+        });
+      }
+    }
+  });
+  
+  return results;
+}
+
+function generateRecommendations(tasks) {
+  const recommendations = [];
+  
+  // Find tasks that might be related but aren't linked
+  tasks.forEach(task => {
+    if (task.status !== 'completed') {
+      const related = findRelatedTasks(task, tasks);
+      if (related.length > 0) {
+        recommendations.push({
+          task: task,
+          suggestions: related.slice(0, 3).map(r => ({
+            task: r,
+            reason: `Similar ${r.relevanceScore > 0.5 ? 'high' : 'moderate'} relevance`,
+            score: r.relevanceScore
+          }))
+        });
+      }
+    }
+  });
+  
+  return recommendations.slice(0, 10);
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`RAG-Enhanced Knowledge Graph Analytics enabled`);
 });

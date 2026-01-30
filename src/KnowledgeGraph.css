@@ -1,0 +1,160 @@
+.knowledge-graph {
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.graph-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.graph-header h2 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.graph-header p {
+  margin: 0;
+  color: #546e7a;
+  font-size: 14px;
+}
+
+.graph-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #455a64;
+}
+
+.legend-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-circle.project {
+  background: #5a9bf5;
+}
+
+.legend-circle.task-completed {
+  background: #4da673;
+}
+
+.legend-circle.task-progress {
+  background: #f6a930;
+}
+
+.legend-circle.task-pending {
+  background: #b0b5c0;
+}
+
+.legend-line {
+  width: 30px;
+  height: 2px;
+  display: inline-block;
+}
+
+.legend-line.solid {
+  background: rgba(150, 150, 150, 0.6);
+}
+
+.legend-line.dashed {
+  background: linear-gradient(to right, rgba(100, 150, 255, 0.6) 50%, transparent 50%);
+  background-size: 8px 2px;
+}
+
+.graph-canvas {
+  display: block;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: default;
+}
+
+.node-details {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #5a9bf5;
+}
+
+.node-details h3 {
+  margin: 0 0 12px 0;
+  color: #2c3e50;
+  font-size: 20px;
+}
+
+.node-details p {
+  margin: 8px 0;
+  color: #546e7a;
+  font-size: 14px;
+}
+
+.node-type {
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.status-completed {
+  color: #4da673;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-in-progress {
+  color: #f6a930;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  color: #b0b5c0;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.priority-high {
+  color: #e74c3c;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.priority-medium {
+  color: #f39c12;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.priority-low {
+  color: #95a5a6;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.connections {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+  font-style: italic;
+  color: #7e8c99;
+}

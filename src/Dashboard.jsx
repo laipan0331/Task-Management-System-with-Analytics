@@ -1,18 +1,26 @@
 import { useState, useEffect } from 'react';
-import { fetchAnalytics } from './services';
+import { fetchAnalytics, fetchTasks, fetchProjects } from './services';
 import TaskList from './TaskList';
 import ProjectList from './ProjectList';
 import ActivityTimeline from './ActivityTimeline';
+import KnowledgeGraph from './KnowledgeGraph';
+import SmartSearch from './SmartSearch';
 import './Dashboard.css';
 
 function Dashboard({ username, onLogout }) {
   const [analytics, setAnalytics] = useState(null);
   const [activeView, setActiveView] = useState('tasks');
   const [error, setError] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     loadAnalytics();
-    const interval = setInterval(loadAnalytics, 30000);
+    loadTasksAndProjects();
+    const interval = setInterval(() => {
+      loadAnalytics();
+      loadTasksAndProjects();
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -24,6 +32,17 @@ function Dashboard({ username, onLogout }) {
       })
       .catch(err => {
         setError(err.error || 'Failed to load analytics');
+      });
+  }
+
+  function loadTasksAndProjects() {
+    Promise.all([fetchTasks(), fetchProjects()])
+      .then(([tasksData, projectsData]) => {
+        setTasks(tasksData.tasks || []);
+        setProjects(projectsData.projects || []);
+      })
+      .catch(err => {
+        console.error('Failed to load data:', err);
       });
   }
 
@@ -48,19 +67,31 @@ function Dashboard({ username, onLogout }) {
           className={activeView === 'tasks' ? 'nav-btn active' : 'nav-btn'}
           onClick={() => setActiveView('tasks')}
         >
-          Tasks
+          📋 Tasks
         </button>
         <button
           className={activeView === 'projects' ? 'nav-btn active' : 'nav-btn'}
           onClick={() => setActiveView('projects')}
         >
-          Projects
+          📁 Projects
+        </button>
+        <button
+          className={activeView === 'search' ? 'nav-btn active' : 'nav-btn'}
+          onClick={() => setActiveView('search')}
+        >
+          🔍 Smart Search
+        </button>
+        <button
+          className={activeView === 'graph' ? 'nav-btn active' : 'nav-btn'}
+          onClick={() => setActiveView('graph')}
+        >
+          🧠 Knowledge Graph
         </button>
         <button
           className={activeView === 'activity' ? 'nav-btn active' : 'nav-btn'}
           onClick={() => setActiveView('activity')}
         >
-          Activity
+          📊 Activity
         </button>
       </nav>
 
@@ -102,6 +133,28 @@ function Dashboard({ username, onLogout }) {
       <div className="dashboard-content">
         {activeView === 'tasks' && <TaskList username={username} />}
         {activeView === 'projects' && <ProjectList username={username} />}
+        {activeView === 'search' && (
+          <SmartSearch 
+            tasks={tasks} 
+            projects={projects}
+            onResultClick={(result) => {
+              if (result.type === 'task') {
+                setActiveView('tasks');
+              } else {
+                setActiveView('projects');
+              }
+            }}
+          />
+        )}
+        {activeView === 'graph' && (
+          <KnowledgeGraph 
+            tasks={tasks} 
+            projects={projects}
+            onTaskClick={(task) => {
+              setActiveView('tasks');
+            }}
+          />
+        )}
         {activeView === 'activity' && <ActivityTimeline username={username} />}
       </div>
     </div>
