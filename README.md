@@ -8,7 +8,6 @@ A sophisticated full-stack web application that combines traditional task manage
 - **[RAG User Guide](RAG_GUIDE.md)** - How to use intelligent search and knowledge graph
 - **[Technical Architecture](ARCHITECTURE.md)** - System design and algorithms
 - **[Project Highlights](PROJECT_HIGHLIGHTS.md)** - Resume-ready achievements
-- **[改进总结 (中文)](IMPROVEMENTS_CN.md)** - Chinese summary of improvements
 
 ## 🌟 Key Highlights
 

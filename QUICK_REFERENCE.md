@@ -125,8 +125,6 @@ User Guide → RAG_GUIDE.md
 Tech Deep Dive → ARCHITECTURE.md
               ↓
 Interview Prep → PROJECT_HIGHLIGHTS.md
-              ↓
-中文总结 → IMPROVEMENTS_CN.md
 ```
 
 ### 🎓 Technical Stack
@@ -174,4 +172,4 @@ Interview Prep → PROJECT_HIGHLIGHTS.md
 **Tests**: Manual testing required  
 **Next Steps**: Run, demo, deploy!
 
-📧 Questions? Check IMPROVEMENTS_CN.md for detailed Chinese explanation.
+📧 Questions? Check documentation files above for detailed explanations.
